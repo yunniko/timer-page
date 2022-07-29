@@ -11,7 +11,6 @@ function newTimerSeconds(name, time) {
 			let hours = Math.floor(timestamp / 3600);
 			let minutes = Math.floor((timestamp - (hours * 3600)) / 60);
 			let seconds = Math.floor(timestamp - (hours * 3600) - (minutes * 60));
-			console.log(timestamp, {hours, minutes, seconds});
 			return {hours, minutes, seconds};
 	}
 
@@ -30,8 +29,11 @@ function newTimerSeconds(name, time) {
 		return time;
 	}
 	return {
-		start: function() {
-			start = Date.now();
+		start: function(time) {
+			if (!time) {
+				time = Date.now();
+			}
+			start = time;
 		},
 		reset: function() {
 			start = 0;
@@ -69,7 +71,6 @@ function newTimerSeconds(name, time) {
 				return null;
 			}
 			val = val * (-1);
-			console.log(val);
 			let {hours, minutes, seconds} = timestampToObject(val);
 			
 			return formatTime([hours, minutes, seconds]);
@@ -89,11 +90,40 @@ function newTimerSeconds(name, time) {
 			
 			return formatTime([hours, minutes, seconds]);
 		},
+		getObjectForSave: function() {
+			return {
+				time: time/60000,
+				name: name,
+				start: start
+			}
+		},
 		element: null
 	}
 }
 function newTimerMinutes(name, time) {
 	return newTimerSeconds(name, time * 60);
+}
+
+function saveGlobalTimers() {
+	let objectsForSave = [];
+	for (let timer of globalTimers) {
+		objectsForSave.push(timer.getObjectForSave());
+	}
+	window.localStorage.setItem("globalTimers", JSON.stringify(objectsForSave));
+}
+
+function extractGlobalVariables() {
+	let timers = window.localStorage.getItem("globalTimers");
+	timers = JSON.parse(timers);
+	if (timers) {
+		for (let savedTimer of timers) {
+			let timer = createNewTimer(savedTimer.name, savedTimer.time);
+			if (savedTimer.start > 0) {
+				timer.start(savedTimer.start);
+			}
+		}
+	}
+	
 }
 
 function createNewTimer(name, minutes) {
@@ -121,29 +151,13 @@ function createNewTimer(name, minutes) {
 		}
 		document.getElementById('running-timers').appendChild(timer.element);
 		globalTimers.push(timer);
+		return timer;
 	}
+	return null;
 }
 
 window.onbeforeunload = function (e) {
-    e = e || window.event;
-
-    let isConfirmationRequired = false;
-    for (let timer of globalTimers) {
-    	if (timer.isRunning()) {
-    		isConfirmationRequired = true;
-    		console.log(timer.getName());
-    		break;
-    	}
-    }
-    if (isConfirmationRequired) {
-    	let question = 'You have timers running. Do you really want to close this page?';
-
-	    if (e) {
-	        e.returnValue = question;
-	    }
-
-	    return question;
-    }
+	saveGlobalTimers();
 };
 
 document.getElementById('new-timer-create').onclick = function() {
@@ -154,39 +168,46 @@ document.getElementById('new-timer-create').onclick = function() {
 
 let globalTimers = [];
 
-let predefinedTimers = [
-	{
-		name: 'Spider',
-		time: 30
-	},
-	{
-		name: 'Werewolf',
-		time: 60
-	},
-	{
-		name: 'Beetle',
-		time: 24 * 60
-	},
-	{
-		name: 'Krab',
-		time: 36 * 60
-	},
-	{
-		name: 'Tunnel Bear',
-		time: 48 * 60
-	},
-	{
-		name: 'Snail',
-		time: 96 * 60
-	},
-];
+extractGlobalVariables();
 
-for (let predefinedTimer of predefinedTimers) {
-	let {name, time} = predefinedTimer;
-	if (time > 0) {
-		createNewTimer(name, time);	
+if (globalTimers.length === 0) {
+	let predefinedTimers = [
+		{
+			name: 'Spider',
+			time: 30
+		},
+		{
+			name: 'Werewolf',
+			time: 60
+		},
+		{
+			name: 'Beetle',
+			time: 24 * 60
+		},
+		{
+			name: 'Krab',
+			time: 36 * 60
+		},
+		{
+			name: 'Tunnel Bear',
+			time: 48 * 60
+		},
+		{
+			name: 'Snail',
+			time: 96 * 60
+		},
+	];
+
+
+	for (let predefinedTimer of predefinedTimers) {
+		let {name, time} = predefinedTimer;
+		if (time > 0) {
+			createNewTimer(name, time);	
+		}
 	}
 }
+
+
 
 setInterval(function(){
 	for (let timer of globalTimers) {
@@ -198,10 +219,11 @@ setInterval(function(){
 				if (timer.secondsLeft() < 60) {
 					timer.element.querySelector('.data').classList.add('alert');
 				}
+				timer.element.querySelector('.start-timer').classList.add('hidden');
+				timer.element.querySelector('.reset-timer').classList.remove('hidden');
 	    	} else {
 	    		document.title = 'ACHTUNG! ' + timer.getName();
 				timer.element.querySelector('.started').innerHTML = 'Stopped: ' + timer.ago() + ' ago';
-				timer.element.querySelector('.reset-timer').classList.remove('hidden');
 				timer.element.classList.add('alert');
 	    	}
 		}
