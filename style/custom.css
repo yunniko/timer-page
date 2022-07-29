@@ -1,0 +1,48 @@
+.container {
+	padding-top: 20px;
+}
+.timer-card {
+	margin: 3px;
+	border-radius: 5px;
+	border: 1px solid hsl(0, 0%, 80%);
+	background: hsl(0, 0%, 85%);
+	padding: 5px;
+}
+
+.timer-control-button {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.start-timer {
+	margin-top: 30px;
+}
+
+.hidden {
+	display:  none!important;
+}
+
+.timer-object {
+	color: hsl(0, 0%, 45%);
+	text-align: center;
+	min-height:  175px;
+}
+.timer-object .data {
+	font-weight: 900;
+	font-size: xx-large;
+	margin-top: 10px;
+}
+
+.timer-object .name {
+	font-weight: bolder;
+	font-size: large;
+}
+
+.timer-object .started {
+	font-weight: lighter;
+	font-size: smaller;
+}
+
+.alert {
+	color: hsl(0, 50%, 45%);
+}
