@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./style/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./style/skeleton.css">
+    <link rel="stylesheet" type="text/css" href="./style/custom.css">
+    <title>Timers page</title>
+  </head>
+  <body>
+    <div id="timers-container" class="container">
+      <div class="hidden">
+        <hr>
+        <div class="row">
+          <div class="two columns"></div>
+          <div class="four columns">
+            <div id="new-timer">
+              <div>
+                <div>
+                  Name:
+                </div>
+                <div>
+                  <input type="text" name="name" value="Timer" id="new-timer-name">
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          <div class="four columns">
+            <div>
+                <div>
+                  Duration (minutes):
+                </div>
+                <div>
+                  <input type="text" name="duration" value="30" id="new-timer-duration">
+                </div>
+              </div>
+            </div>
+          <div class="two columns"></div>
+        </div>
+
+        <div class="row">
+
+          <div class="two columns"></div>
+          <div class="ten columns">
+            <div>
+              <div>
+                <input type="button" class="button-primary" name="" value="Create new" id="new-timer-create">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+        </div>
+        
+        <hr>
+      </div>
+
+      <div class="row">
+        <div class="six columns">
+          <label>
+            <input type="checkbox" id="reduce-15" class="reduce">
+            <span class="label-body">reduce time for 15%</span>
+          </label>
+        </div>
+        <div class="six columns">
+          <label>
+            <input type="checkbox" id="reduce-3" class="reduce">
+            <span class="label-body">reduce time for 3%</span>
+          </label>
+        </div>
+      </div>
+      <div id="running-timers" class="row">
+      </div>
+
+    </div>
+
+    <template id="new-timer-template">
+      <div class="timer-object three columns timer-card">
+        <div class="name"></div>
+        <div class="started"></div>
+        <div class="data"></div>
+        <input type="button" value="Start" class="start-timer timer-control-button">
+        <input type="button" value="Reset" class="reset-timer timer-control-button hidden">
+        </div>
+      </div>
+    </template>
+
+    <script src="./script/timers.js"></script>
+  </body>
+</html>
