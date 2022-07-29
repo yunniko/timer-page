@@ -110,6 +110,12 @@ function saveGlobalTimers() {
 		objectsForSave.push(timer.getObjectForSave());
 	}
 	window.localStorage.setItem("globalTimers", JSON.stringify(objectsForSave));
+
+	let reduce = {};
+	for (let id of ['reduce-15', 'reduce-3']) {
+		reduce[id] = document.getElementById(id).checked;
+	}
+	window.localStorage.setItem("reduce", JSON.stringify(reduce));
 }
 
 function extractGlobalVariables() {
@@ -122,6 +128,15 @@ function extractGlobalVariables() {
 				timer.start(savedTimer.start);
 			}
 		}
+	}
+	
+	let reduce = window.localStorage.getItem("reduce");
+	reduce = JSON.parse(reduce);
+	if (reduce) {
+		for (let id of ['reduce-15', 'reduce-3']) {
+			document.getElementById(id).checked = reduce[id]
+		}
+		updateTimers();
 	}
 	
 }
@@ -230,13 +245,12 @@ setInterval(function(){
     	
     }
 },1000);
-
+function updateTimers() {
+	for (let timer of globalTimers) {
+		timer.element.querySelector('.name').innerHTML = timer.description();
+	}
+};
 for (let reduceElement of document.querySelectorAll('.reduce')) {
-	let updateTimers = function() {
-		for (let timer of globalTimers) {
-			timer.element.querySelector('.name').innerHTML = timer.description();
-		}
-	};
 	reduceElement.onclick = updateTimers;
 }
 			
