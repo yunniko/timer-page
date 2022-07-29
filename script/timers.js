@@ -8,10 +8,26 @@ function newTimerSeconds(name, time) {
 		}).join(':');
 	}
 	function timestampToObject(timestamp) {
-			let hours = Math.floor(timestamp / (3600));
+			let hours = Math.floor(timestamp / 3600);
 			let minutes = Math.floor((timestamp - (hours * 3600)) / 60);
 			let seconds = Math.floor(timestamp - (hours * 3600) - (minutes * 60));
+			console.log(timestamp, {hours, minutes, seconds});
 			return {hours, minutes, seconds};
+	}
+
+	function getGlobalPercentReduce() {
+		let result = 0;
+		result += (document.getElementById('reduce-15').checked ? 15 : 0);
+		result += (document.getElementById('reduce-3').checked ? 3 : 0);
+		return result;
+	}
+
+	function getTime() {
+		let reduce = getGlobalPercentReduce();
+		if (reduce > 0) {
+			return time * ((100 - getGlobalPercentReduce())/100);
+		}
+		return time;
 	}
 	return {
 		start: function() {
@@ -24,7 +40,7 @@ function newTimerSeconds(name, time) {
 			if (start === 0) {
 				return 0;
 			}
-			return Math.round((time - (Date.now() - start)) / 1000);
+			return Math.round((getTime() - (Date.now() - start)) / 1000);
 		},
 		value: function() {
 			let val = this.secondsLeft();
@@ -69,8 +85,7 @@ function newTimerSeconds(name, time) {
 			return formatTime([date.getHours(), date.getMinutes(), date.getSeconds()]);
 		},
 		getDuration: function() {
-			let {hours, minutes, seconds} = timestampToObject(time/1000);
-			console.log(time);
+			let {hours, minutes, seconds} = timestampToObject(getTime()/1000);
 			
 			return formatTime([hours, minutes, seconds]);
 		},
@@ -141,22 +156,36 @@ let globalTimers = [];
 
 let predefinedTimers = [
 	{
-		name: 'Boss 1',
-		time: 1
+		name: 'Spider',
+		time: 30
 	},
 	{
-		name: 'Boss 2',
-		time: 2
+		name: 'Werewolf',
+		time: 60
 	},
 	{
-		name: 'Boss 3',
-		time: 0.5
-	}
+		name: 'Beetle',
+		time: 24 * 60
+	},
+	{
+		name: 'Krab',
+		time: 36 * 60
+	},
+	{
+		name: 'Tunnel Bear',
+		time: 48 * 60
+	},
+	{
+		name: 'Snail',
+		time: 96 * 60
+	},
 ];
 
 for (let predefinedTimer of predefinedTimers) {
 	let {name, time} = predefinedTimer;
-	createNewTimer(name, time);
+	if (time > 0) {
+		createNewTimer(name, time);	
+	}
 }
 
 setInterval(function(){
@@ -174,11 +203,18 @@ setInterval(function(){
 				timer.element.querySelector('.started').innerHTML = 'Stopped: ' + timer.ago() + ' ago';
 				timer.element.querySelector('.reset-timer').classList.remove('hidden');
 				timer.element.classList.add('alert');
-				if (timer.secondsLeft() === 0) {
-	    			alert('ACHTUNG!');
-				}
 	    	}
 		}
     	
     }
 },1000);
+
+for (let reduceElement of document.querySelectorAll('.reduce')) {
+	let updateTimers = function() {
+		for (let timer of globalTimers) {
+			timer.element.querySelector('.name').innerHTML = timer.description();
+		}
+	};
+	reduceElement.onclick = updateTimers;
+}
+			
