@@ -126,6 +126,9 @@ function extractGlobalVariables() {
 			let timer = createNewTimer(savedTimer.name, savedTimer.time);
 			if (savedTimer.start > 0) {
 				timer.start(savedTimer.start);
+				timer.element.querySelector('.start-timer').classList.add('hidden');
+				timer.element.querySelector('.reset-timer').classList.remove('hidden');
+				timer.element.querySelector('.data').innerHTML = timer.value();
 			}
 		}
 	}
@@ -147,17 +150,7 @@ function createNewTimer(name, minutes) {
 		let template = document.getElementById('new-timer-template');
 		timer.element = template.content.cloneNode(true).children[0];
 		timer.element.querySelector('.name').innerHTML = timer.description();
-		timer.element.querySelector('.start-timer').onclick=function(){
-			if (!timer.isStarted()) {
-				timer.start();
-				timer.element.querySelector('.name').innerHTML = timer.description();
-				timer.element.querySelector('.data').innerHTML = timer.value();
-				timer.element.querySelector('.start-timer').classList.add('hidden');
-				timer.element.querySelector('.reset-timer').classList.remove('hidden');
-			}
-			
-		}
-		timer.element.querySelector('.reset-timer').onclick=function(){
+		function resetTimer() {
 			timer.reset();
 			document.title = 'Timers page';
 			timer.element.querySelector('.data').classList.remove('alert');
@@ -168,6 +161,16 @@ function createNewTimer(name, minutes) {
 			timer.element.querySelector('.reset-timer').classList.add('hidden');
 			timer.element.querySelector('.start-timer').classList.remove('hidden');
 		}
+		timer.element.querySelector('.start-timer').onclick=function(){
+			resetTimer();
+			timer.start();
+			timer.element.querySelector('.name').innerHTML = timer.description();
+			timer.element.querySelector('.data').innerHTML = timer.value();
+			timer.element.querySelector('.start-timer').classList.add('hidden');
+			timer.element.querySelector('.reset-timer').classList.remove('hidden');
+			
+		}
+		timer.element.querySelector('.reset-timer').onclick=resetTimer;
 		document.getElementById('running-timers').appendChild(timer.element);
 		globalTimers.push(timer);
 		return timer;
