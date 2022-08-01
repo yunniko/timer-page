@@ -148,10 +148,14 @@ function createNewTimer(name, minutes) {
 		timer.element = template.content.cloneNode(true).children[0];
 		timer.element.querySelector('.name').innerHTML = timer.description();
 		timer.element.querySelector('.start-timer').onclick=function(){
-			timer.start();
-			timer.element.querySelector('.name').innerHTML = timer.description();
-			timer.element.querySelector('.data').innerHTML = timer.value();
-			timer.element.querySelector('.start-timer').classList.add('hidden');
+			if (!timer.isStarted()) {
+				timer.start();
+				timer.element.querySelector('.name').innerHTML = timer.description();
+				timer.element.querySelector('.data').innerHTML = timer.value();
+				timer.element.querySelector('.start-timer').classList.add('hidden');
+				timer.element.querySelector('.reset-timer').classList.remove('hidden');
+			}
+			
 		}
 		timer.element.querySelector('.reset-timer').onclick=function(){
 			timer.reset();
@@ -222,9 +226,7 @@ if (globalTimers.length === 0) {
 	}
 }
 
-
-
-setInterval(function(){
+function renderTimers() {
 	for (let timer of globalTimers) {
 		if (timer.isStarted()) {
 			if (timer.isRunning()) {
@@ -244,7 +246,10 @@ setInterval(function(){
 		}
     	
     }
-},1000);
+}
+
+renderTimers();
+setInterval(renderTimers,1000);
 function updateTimers() {
 	for (let timer of globalTimers) {
 		timer.element.querySelector('.name').innerHTML = timer.description();
